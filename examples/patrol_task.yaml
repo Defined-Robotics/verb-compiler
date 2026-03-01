@@ -1,0 +1,34 @@
+# Example task: Patrol 3 waypoints
+name: PatrolTask
+description: "Patrol between three waypoints, reporting at each"
+steps:
+  - verb: go_to
+    params:
+      x: 1.0
+      y: 0.0
+      theta: 0.0
+  - verb: report
+    params:
+      message: "arrived_at_wp1"
+  - verb: wait
+    params:
+      duration: 2.0
+  - verb: go_to
+    params:
+      x: 2.0
+      y: 1.5
+      theta: 1.57
+  - verb: report
+    params:
+      message: "arrived_at_wp2"
+  - verb: wait
+    params:
+      duration: 2.0
+  - verb: go_to
+    params:
+      x: 0.0
+      y: 0.0
+      theta: 0.0
+  - verb: report
+    params:
+      message: "patrol_complete"

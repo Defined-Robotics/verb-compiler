@@ -1,0 +1,13 @@
+# Verb definition: wait
+# Wait for a specified duration
+name: wait
+description: "Pause execution for a specified duration"
+required_capabilities: []
+template: wait.xml.j2
+primitives:
+  - delay
+parameters:
+  duration:
+    type: float
+    required: true
+    description: "Wait duration in seconds"

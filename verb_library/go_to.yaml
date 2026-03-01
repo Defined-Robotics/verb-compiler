@@ -1,0 +1,23 @@
+# Verb definition: go_to
+# Navigate to a specific waypoint
+name: go_to
+description: "Navigate the robot to a specified position"
+required_capabilities:
+  - differential_drive
+template: go_to.xml.j2
+primitives:
+  - navigate_to_pose
+parameters:
+  x:
+    type: float
+    required: true
+    description: "Target X coordinate (meters)"
+  y:
+    type: float
+    required: true
+    description: "Target Y coordinate (meters)"
+  theta:
+    type: float
+    required: false
+    default: 0.0
+    description: "Target orientation (radians)"

@@ -1,0 +1,14 @@
+# Verb definition: report
+# Report status or data
+name: report
+description: "Publish a status report to the monitoring system"
+required_capabilities: []
+template: report.xml.j2
+primitives:
+  - publish_status
+parameters:
+  message:
+    type: string
+    required: false
+    default: "checkpoint"
+    description: "Report message"
