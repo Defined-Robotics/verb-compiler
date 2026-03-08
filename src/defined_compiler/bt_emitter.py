@@ -6,13 +6,14 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
-TEMPLATE_DIR = Path(__file__).parent.parent.parent / "verb_library"
+DEFAULT_TEMPLATE_DIR = Path(__file__).parent.parent.parent / "verb_library"
 
 
-def render_bt_xml(expanded_verbs: list[dict], task_name: str = "MainTask") -> str:
+def render_bt_xml(expanded_verbs: list[dict], task_name: str = "MainTask", verbs_dir: Path | None = None) -> str:
     """Render a complete BehaviorTree.CPP XML from a list of expanded verbs."""
+    template_dir = verbs_dir if verbs_dir is not None else DEFAULT_TEMPLATE_DIR
     env = Environment(
-        loader=FileSystemLoader(str(TEMPLATE_DIR)),
+        loader=FileSystemLoader(str(template_dir)),
         trim_blocks=True,
         lstrip_blocks=True,
     )
