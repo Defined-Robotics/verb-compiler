@@ -123,7 +123,7 @@ class TestBTEmitter:
         xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
         assert 'ID="GoTo"' in xml
         assert 'x="1.0"' in xml
-        assert '<RetryNode num_attempts="3">' in xml
+        assert '<RetryUntilSuccessful num_attempts="3">' in xml
         assert 'frame_id="map"' in xml
         assert 'server_name="/navigate_to_pose"' in xml
 
@@ -198,8 +198,8 @@ class TestBTEmitter:
     def test_retry_node_indentation(self):
         expanded = [self._expand("go_to", {"x": 1.0, "y": 0.0})]
         xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
-        # RetryNode wrapper should be indented 12 spaces
-        assert '            <RetryNode' in xml
+        # RetryUntilSuccessful wrapper should be indented 12 spaces
+        assert '            <RetryUntilSuccessful' in xml
 
 
 # ---------------------------------------------------------------------------

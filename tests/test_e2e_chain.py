@@ -159,16 +159,16 @@ class TestTaskToBTXML:
         root = ET.fromstring(xml)
         bt = root.find("BehaviorTree")
         seq = bt.find("Sequence")
-        # 3 GoTo (each wrapped in RetryNode) + 3 Report + 2 Wait = 8 children
+        # 3 GoTo (each wrapped in RetryUntilSuccessful) + 3 Report + 2 Wait = 8 children
         assert len(list(seq)) == 8
 
     def test_goto_has_correct_attributes(self, tb3_registry):
         xml = self._compile_patrol(tb3_registry)
         root = ET.fromstring(xml)
         seq = root.find("BehaviorTree/Sequence")
-        # First child is RetryNode wrapping GoTo
+        # First child is RetryUntilSuccessful wrapping GoTo
         retry = seq[0]
-        assert retry.tag == "RetryNode"
+        assert retry.tag == "RetryUntilSuccessful"
         assert retry.get("num_attempts") == "3"
         goto = retry.find("Action")
         assert goto.get("ID") == "GoTo"

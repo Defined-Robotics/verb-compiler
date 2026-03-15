@@ -81,12 +81,12 @@ class TestFullPipeline:
         seq = bt.find("Sequence")
         assert seq is not None
 
-        # GoTo verbs are wrapped in RetryNode, others are direct Action children
+        # GoTo verbs are wrapped in RetryUntilSuccessful, others are direct Action children
         # 8 steps total: go_to(retry), report, wait, go_to(retry), report, wait, go_to(retry), report
         direct_children = list(seq)
         assert len(direct_children) == 8
 
-        # All actions (including nested in RetryNode)
+        # All actions (including nested in RetryUntilSuccessful)
         all_actions = list(seq.iter("Action"))
         assert len(all_actions) == 8
 
@@ -114,7 +114,7 @@ class TestFullPipeline:
         xml = _compile_task(PATROL_TASK)
         root = _parse_xml(xml)
         seq = root.find("BehaviorTree").find("Sequence")
-        retry_nodes = seq.findall("RetryNode")
+        retry_nodes = seq.findall("RetryUntilSuccessful")
         assert len(retry_nodes) == 3  # 3 go_to steps
         for retry in retry_nodes:
             assert retry.attrib["num_attempts"] == "3"
