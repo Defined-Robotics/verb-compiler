@@ -12,3 +12,17 @@ parameters:
     required: false
     default: "checkpoint"
     description: "Report message"
+  topic:
+    type: string
+    required: false
+    default: "/task_reports"
+    description: "ROS topic to publish report to"
+  level:
+    type: string
+    required: false
+    default: "info"
+    description: "Report severity level (debug, info, warn, error)"
+output_parameters:
+  success:
+    type: bool
+    description: "Whether report was published"

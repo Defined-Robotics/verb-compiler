@@ -21,3 +21,27 @@ parameters:
     required: false
     default: 0.0
     description: "Target orientation (radians)"
+  timeout:
+    type: float
+    required: false
+    default: 60.0
+    description: "Navigation timeout in seconds"
+  frame_id:
+    type: string
+    required: false
+    default: "map"
+    description: "Reference frame for goal coordinates"
+  server_name:
+    type: string
+    required: false
+    default: "/navigate_to_pose"
+    description: "Nav2 action server name"
+  retries:
+    type: int
+    required: false
+    default: 3
+    description: "Number of retry attempts on failure"
+output_parameters:
+  error_code:
+    type: int
+    description: "Navigation error code"

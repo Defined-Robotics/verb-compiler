@@ -123,6 +123,9 @@ class TestBTEmitter:
         xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
         assert 'ID="GoTo"' in xml
         assert 'x="1.0"' in xml
+        assert '<RetryNode num_attempts="3">' in xml
+        assert 'frame_id="map"' in xml
+        assert 'server_name="/navigate_to_pose"' in xml
 
     def test_full_patrol_xml(self):
         steps = [
@@ -143,6 +146,60 @@ class TestBTEmitter:
         expanded = [self._expand("wait", {"duration": 1.0})]
         xml = bt_emitter.render_bt_xml(expanded, task_name="MyTask", verbs_dir=VERB_LIBRARY_DIR)
         assert "MyTask" in xml
+
+    def test_tree_nodes_model_present(self):
+        expanded = [self._expand("go_to", {"x": 1.0, "y": 0.0})]
+        xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
+        assert "<TreeNodesModel>" in xml
+        assert 'input_port name="x"' in xml
+        assert 'input_port name="y"' in xml
+        assert 'input_port name="theta"' in xml
+        assert 'input_port name="timeout"' in xml
+        assert 'input_port name="frame_id"' in xml
+        assert 'input_port name="server_name"' in xml
+        assert 'input_port name="retries"' in xml
+        assert 'output_port name="error_code"' in xml
+
+    def test_tree_nodes_model_deduplicates(self):
+        expanded = [
+            self._expand("go_to", {"x": 1.0, "y": 0.0}),
+            self._expand("go_to", {"x": 2.0, "y": 3.0}),
+        ]
+        xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
+        assert xml.count('Action ID="GoTo"') == 3  # 2 actions + 1 in model
+
+    def test_report_has_topic_and_level(self):
+        expanded = [self._expand("report", {"message": "ok"})]
+        xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
+        assert 'topic="/task_reports"' in xml
+        assert 'level="info"' in xml
+
+    def test_report_output_port(self):
+        expanded = [self._expand("report", {"message": "ok"})]
+        xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
+        assert 'output_port name="success"' in xml
+
+    def test_go_to_timeout_default(self):
+        expanded = [self._expand("go_to", {"x": 1.0, "y": 0.0})]
+        xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
+        assert 'timeout="60.0"' in xml
+
+    def test_go_to_timeout_custom(self):
+        expanded = [self._expand("go_to", {"x": 1.0, "y": 0.0, "timeout": 30.0})]
+        xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
+        assert 'timeout="30.0"' in xml
+
+    def test_xml_indentation(self):
+        expanded = [self._expand("wait", {"duration": 1.0})]
+        xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
+        # Single-line action nodes inside <Sequence> should be indented 12 spaces
+        assert '            <Action ID="Wait"' in xml
+
+    def test_retry_node_indentation(self):
+        expanded = [self._expand("go_to", {"x": 1.0, "y": 0.0})]
+        xml = bt_emitter.render_bt_xml(expanded, task_name="T", verbs_dir=VERB_LIBRARY_DIR)
+        # RetryNode wrapper should be indented 12 spaces
+        assert '            <RetryNode' in xml
 
 
 # ---------------------------------------------------------------------------
