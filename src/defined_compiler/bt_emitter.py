@@ -1,11 +1,27 @@
-"""BT XML emitter — render BehaviorTree.CPP v4 XML from expanded verbs."""
+"""
+BT XML emitter — render BehaviorTree.CPP v4 XML from expanded verbs.
+
+Takes the intermediate representation produced by the verb expander and
+renders a complete BehaviorTree.CPP v4 XML document, including the
+``<TreeNodesModel>`` port manifest required by Groot2.
+
+Usage:
+    from defined_compiler.bt_emitter import render_bt_xml
+
+    xml = render_bt_xml(expanded_verbs, task_name="PatrolTask")
+"""
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
 
 DEFAULT_TEMPLATE_DIR = Path(__file__).parent.parent.parent / "verb_library"
 
@@ -15,8 +31,19 @@ DEFAULT_TEMPLATE_DIR = Path(__file__).parent.parent.parent / "verb_library"
 # Built dynamically from verb YAML definitions.
 # ---------------------------------------------------------------------------
 
+
 def _build_tree_nodes_model(verb_names: list[str], verbs_dir: Path) -> str:
-    """Generate <TreeNodesModel> XML from verb definition YAMLs."""
+    """Generate ``<TreeNodesModel>`` XML from verb definition YAMLs.
+
+    Args:
+        verb_names: Ordered list of verb identifiers used in the task.
+            Duplicates are deduplicated automatically.
+        verbs_dir: Directory containing verb YAML definition files.
+
+    Returns:
+        XML string for the ``<TreeNodesModel>`` block, including
+        ``<input_port>`` and ``<output_port>`` declarations.
+    """
     lines = ["    <TreeNodesModel>"]
     seen = set()
 
@@ -29,7 +56,7 @@ def _build_tree_nodes_model(verb_names: list[str], verbs_dir: Path) -> str:
         if not yaml_path.exists():
             continue
 
-        with open(yaml_path) as f:
+        with yaml_path.open() as f:
             defn = yaml.safe_load(f)
 
         # Action ID is PascalCase of the verb name
@@ -59,12 +86,35 @@ def _build_tree_nodes_model(verb_names: list[str], verbs_dir: Path) -> str:
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
+
 def render_bt_xml(
-    expanded_verbs: list[dict],
+    expanded_verbs: list[dict[str, Any]],
     task_name: str = "MainTask",
     verbs_dir: Path | None = None,
 ) -> str:
-    """Render a complete BehaviorTree.CPP v4 XML from a list of expanded verbs."""
+    """Render a complete BehaviorTree.CPP v4 XML document.
+
+    Takes the list of expanded verb dicts produced by
+    :func:`defined_compiler.verb_expander.expand_verb` and renders them
+    through their Jinja2 templates into a single BT XML document with a
+    ``<TreeNodesModel>`` port manifest.
+
+    Args:
+        expanded_verbs: Sequence of expanded verb dicts, each containing
+            keys ``verb``, ``params``, ``template``, and
+            ``required_capabilities``.
+        task_name: Name for the root ``<BehaviorTree>`` ID and the wrapping
+            ``<Sequence>``. Defaults to ``"MainTask"``.
+        verbs_dir: Directory containing the Jinja2 template files and verb
+            YAML definitions. Defaults to the built-in ``verb_library/``.
+
+    Returns:
+        Complete BehaviorTree.CPP v4 XML as a string.
+    """
     template_dir = verbs_dir if verbs_dir is not None else DEFAULT_TEMPLATE_DIR
     env = Environment(
         loader=FileSystemLoader(str(template_dir)),

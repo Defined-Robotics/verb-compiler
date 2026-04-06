@@ -1,4 +1,13 @@
-"""CLI entry point for the verb compiler."""
+"""
+CLI entry point for the verb compiler.
+
+Provides the ``defined-compile`` command, which compiles a YAML verb task
+file to BehaviorTree.CPP XML (or generates a URDF xacro via --generate-urdf).
+
+Usage:
+    defined-compile patrol.task.yaml --rdf robot.rdf.yaml
+    defined-compile --rdf robot.rdf.yaml --generate-urdf
+"""
 
 from __future__ import annotations
 
@@ -11,8 +20,20 @@ from defined_rdf.registry import CapabilityRegistry
 
 from . import bt_emitter, capability_gate, parser, urdf_emitter, verb_expander
 
+# ---------------------------------------------------------------------------
+# CLI entry point
+# ---------------------------------------------------------------------------
+
 
 def main() -> None:
+    """Entry point for the ``defined-compile`` CLI command.
+
+    Parses command-line arguments, loads the RDF manifest, performs
+    capability gating for each verb step, and writes BT XML (or URDF
+    xacro) to a file or stdout.
+
+    Exits with code 1 and prints an error to stderr on any failure.
+    """
     ap = argparse.ArgumentParser(description="Compile YAML verb tasks to BehaviorTree.CPP XML")
     ap.add_argument("task", type=Path, nargs="?", help="Path to YAML task file (not needed with --generate-urdf)")
     ap.add_argument("--rdf", type=Path, required=True, help="Path to RDF YAML file")
