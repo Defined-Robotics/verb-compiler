@@ -6,6 +6,14 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- `validate_urdf_structure(xml_str)` in `urdf_emitter` — structural validator (backlog 999.8):
+  well-formed XML, `base_footprint` declared, no dangling joint refs, exactly one tree root,
+  at least 2 continuous joints. Raises `URDFStructureError` on failure.
+  Called automatically at the end of `render_urdf()`.
+- `URDFStructureError` exception class for structured URDF validation failures.
+- 11 new tests in `tests/test_urdf_validator.py` covering all 5 structural checks.
+
 ## [0.0.2] — 2026-04-06
 
 ### Changed
