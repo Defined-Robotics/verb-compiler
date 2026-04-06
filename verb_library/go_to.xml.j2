@@ -1,2 +1,3 @@
-<Action ID="GoTo" name="go_to_{{ x }}_{{ y }}"
-    x="{{ x }}" y="{{ y }}" theta="{{ theta | default('0.0') }}" />
+<RetryUntilSuccessful num_attempts="{{ retries | default('3') }}">
+    <Action ID="GoTo" name="go_to_{{ x }}_{{ y }}" x="{{ x }}" y="{{ y }}" theta="{{ theta | default('0.0') }}" frame_id="{{ frame_id | default('map') }}" server_name="{{ server_name | default('/navigate_to_pose') }}" timeout="{{ timeout | default('60.0') }}" />
+</RetryUntilSuccessful>

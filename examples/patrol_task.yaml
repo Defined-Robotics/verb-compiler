@@ -16,7 +16,7 @@ steps:
   - verb: go_to
     params:
       x: 2.0
-      y: 1.5
+      y: 1.0
       theta: 1.57
   - verb: report
     params:

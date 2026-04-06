@@ -1,10 +1,10 @@
 [build-system]
 requires = ["hatchling"]
-build-backend = "hatchling.backends"
+build-backend = "hatchling.build"
 
 [project]
 name = "defined-compiler"
-version = "0.0.1"
+version = "0.0.2"
 description = "Verb language compiler — YAML tasks to BehaviorTree.CPP XML"
 readme = "README.md"
 requires-python = ">=3.12"
