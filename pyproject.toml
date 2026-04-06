@@ -4,10 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "defined-compiler"
-version = "0.0.1"
+version = "0.0.2"
 description = "Verb language compiler — YAML tasks to BehaviorTree.CPP XML"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 license = "Apache-2.0"
 dependencies = [
     "defined-rdf>=0.0.1",
