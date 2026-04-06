@@ -13,5 +13,10 @@ build/
 .vscode/
 *.swp
 
+# Generated outputs (keep examples/ manually)
+*.urdf.xacro
+*.bt.xml
+.pytest_cache/
+
 # OS
 .DS_Store
