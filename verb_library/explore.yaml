@@ -1,0 +1,15 @@
+# Verb definition: explore
+# Autonomously explore and map the environment using frontier exploration
+name: explore
+description: "Autonomously explore and map the environment using frontier exploration"
+required_capabilities:
+  - differential_drive
+template: explore.xml.j2
+primitives:
+  - navigate_to_pose
+parameters:
+  timeout:
+    type: float
+    required: false
+    default: 300.0
+    description: "Max exploration time in seconds"
