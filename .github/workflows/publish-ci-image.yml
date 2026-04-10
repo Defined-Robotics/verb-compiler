@@ -32,5 +32,5 @@ jobs:
           file: Dockerfile.ci
           push: true
           tags: ghcr.io/defined-robotics/compiler-ci:latest
-          build-args: |
-            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
