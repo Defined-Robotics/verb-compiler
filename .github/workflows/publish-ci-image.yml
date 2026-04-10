@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -32,5 +32,3 @@ jobs:
           file: Dockerfile.ci
           push: true
           tags: ghcr.io/defined-robotics/compiler-ci:latest
-          build-args: |
-            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
