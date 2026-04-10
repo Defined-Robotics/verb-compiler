@@ -5,9 +5,8 @@ FROM ghcr.io/defined-robotics/python-base:3.12
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 
 # Install defined-rdf from source (until published to PyPI)
-RUN --mount=type=secret,id=github_token \
-    pip install --no-cache-dir \
-    "defined-rdf @ git+https://$(cat /run/secrets/github_token)@github.com/Defined-Robotics/defined-rdf.git@trunk"
+RUN pip install --no-cache-dir \
+    "defined-rdf @ git+https://github.com/Defined-Robotics/rdf.git@trunk"
 
 COPY pyproject.toml .
 RUN pip install --no-cache-dir -e ".[dev]"
