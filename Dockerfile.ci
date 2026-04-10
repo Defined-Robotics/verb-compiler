@@ -4,11 +4,10 @@ FROM ghcr.io/defined-robotics/python-base:3.12
 # Install git (required for pip install from git+https:// sources)
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 
-# Accept a GitHub token for installing private dependencies
-ARG GITHUB_TOKEN
 # Install defined-rdf from source (until published to PyPI)
-RUN pip install --no-cache-dir \
-    "defined-rdf @ git+https://${GITHUB_TOKEN}@github.com/Defined-Robotics/defined-rdf.git@trunk"
+RUN --mount=type=secret,id=github_token \
+    pip install --no-cache-dir \
+    "defined-rdf @ git+https://$(cat /run/secrets/github_token)@github.com/Defined-Robotics/defined-rdf.git@trunk"
 
 COPY pyproject.toml .
 RUN pip install --no-cache-dir -e ".[dev]"
