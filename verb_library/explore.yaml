@@ -13,3 +13,36 @@ parameters:
     required: false
     default: 300.0
     description: "Max exploration time in seconds"
+
+# Layer 3: Software dependencies
+dependencies:
+  apt: []
+  source:
+    - repo: https://github.com/robo-friends/m-explore-ros2
+      ref: humble
+      packages: [explore_lite]
+      patches:
+        - fix_autostart.patch
+    - repo: https://github.com/Defined-Robotics/defined-platform
+      ref: trunk
+      packages: [defined_runtime]
+
+# Layer 4: Runtime configuration
+runtime:
+  nodes:
+    - package: explore_lite
+      executable: explore
+      parameters:
+        planner_frequency: 0.1
+        progress_timeout: 60.0
+        min_frontier_size: 0.3
+
+# Layer 5: Interface contract
+interface:
+  actions: []
+  topics:
+    subscribes:
+      - /map
+      - /scan
+    publishes:
+      - /explore/frontiers

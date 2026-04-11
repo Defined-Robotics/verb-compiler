@@ -26,3 +26,19 @@ output_parameters:
   success:
     type: bool
     description: "Whether report was published"
+
+# Layer 3: Software dependencies
+dependencies:
+  source:
+    - repo: https://github.com/Defined-Robotics/defined-platform
+      ref: trunk
+      packages: [defined_runtime]
+
+# Layer 4: Runtime configuration
+runtime: {}
+
+# Layer 5: Interface contract
+interface:
+  topics:
+    publishes:
+      - /task_reports

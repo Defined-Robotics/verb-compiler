@@ -45,3 +45,30 @@ output_parameters:
   error_code:
     type: int
     description: "Navigation error code"
+
+# Layer 3: Software dependencies
+dependencies:
+  apt:
+    - ros-jazzy-nav2-bringup
+  source:
+    - repo: https://github.com/Defined-Robotics/defined-platform
+      ref: trunk
+      packages: [defined_runtime]
+
+# Layer 4: Runtime configuration
+runtime:
+  nodes:
+    - package: nav2_bringup
+      executable: navigation_launch.py
+      parameters:
+        use_sim_time: true
+
+# Layer 5: Interface contract
+interface:
+  actions:
+    - name: /navigate_to_pose
+  topics:
+    subscribes: []
+    publishes: []
+  outputs:
+    - error_code
