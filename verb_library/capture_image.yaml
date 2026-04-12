@@ -1,0 +1,51 @@
+# Verb definition: capture_image
+# Capture a single image from the robot's camera
+name: capture_image
+description: "Capture an image from the camera and save to disk"
+required_capabilities:
+  - rgb_camera
+template: capture_image.xml.j2
+primitives:
+  - capture_image
+parameters:
+  topic:
+    type: string
+    required: false
+    default: "/camera/image_raw"
+    description: "Camera image topic to subscribe to"
+  save_path:
+    type: string
+    required: false
+    default: "/tmp/capture"
+    description: "Directory to save captured images"
+  timeout:
+    type: float
+    required: false
+    default: 5.0
+    description: "Timeout waiting for camera frame (seconds)"
+output_parameters:
+  image_path:
+    type: string
+    description: "Path to the saved image file"
+
+# Layer 3: Software dependencies
+dependencies:
+  apt:
+    - ros-jazzy-cv-bridge
+  source:
+    - repo: https://github.com/Defined-Robotics/defined-platform
+      ref: trunk
+      packages: [defined_runtime]
+
+# Layer 4: Runtime configuration
+runtime: {}
+
+# Layer 5: Interface contract
+interface:
+  topics:
+    subscribes:
+      - /camera/image_raw
+    publishes:
+      - /task_reports
+  outputs:
+    - image_path

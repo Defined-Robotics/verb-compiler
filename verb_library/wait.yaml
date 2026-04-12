@@ -11,3 +11,16 @@ parameters:
     type: float
     required: true
     description: "Wait duration in seconds"
+
+# Layer 3: Software dependencies
+dependencies:
+  source:
+    - repo: https://github.com/Defined-Robotics/defined-platform
+      ref: trunk
+      packages: [defined_runtime]
+
+# Layer 4: Runtime configuration
+runtime: {}
+
+# Layer 5: Interface contract
+interface: {}

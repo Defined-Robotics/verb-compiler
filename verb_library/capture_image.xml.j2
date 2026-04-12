@@ -1,0 +1,1 @@
+<Action ID="CaptureImage" name="capture_image_{{ topic | replace('/', '_') }}" topic="{{ topic | default('/camera/image_raw') }}" save_path="{{ save_path | default('/tmp/capture') }}" timeout="{{ timeout | default(5.0) }}" />
