@@ -19,6 +19,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from defined_compiler.bt_emitter import render_bt_xml
 from defined_compiler.verb_expander import (
     expand_verb,
     load_verb_definition,
@@ -287,3 +288,32 @@ class TestExpandVerbBackwardCompat:
         assert result["verb"] == "go_to"
         assert result["template"] == "go_to.xml.j2"
         assert "differential_drive" in result["required_capabilities"]
+
+
+# ---------------------------------------------------------------------------
+# BT emitter fallback — project dir stubs resolve built-in templates
+# ---------------------------------------------------------------------------
+
+
+class TestBTEmitterBuiltinFallback:
+
+    def test_render_with_project_stub_uses_builtin_template(self, tmp_path: Path) -> None:
+        """A project verbs_dir with only a stub still renders via built-in template."""
+        _write_verb(tmp_path, "go_to", {"extends": "defined/go_to"})
+
+        expanded = [expand_verb("go_to", {"x": 1.0, "y": 2.0}, verbs_dir=tmp_path)]
+        xml = render_bt_xml(expanded, task_name="FallbackTest", verbs_dir=tmp_path)
+
+        assert 'ID="GoTo"' in xml
+        assert 'x="1.0"' in xml
+
+    def test_tree_nodes_model_with_project_stub(self, tmp_path: Path) -> None:
+        """TreeNodesModel resolves verb YAML from built-in when project dir has only a stub."""
+        _write_verb(tmp_path, "go_to", {"extends": "defined/go_to"})
+
+        expanded = [expand_verb("go_to", {"x": 1.0, "y": 2.0}, verbs_dir=tmp_path)]
+        xml = render_bt_xml(expanded, task_name="FallbackTest", verbs_dir=tmp_path)
+
+        assert "TreeNodesModel" in xml
+        assert 'ID="GoTo"' in xml
+        assert "input_port" in xml

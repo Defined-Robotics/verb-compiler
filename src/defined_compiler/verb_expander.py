@@ -7,14 +7,16 @@ capability gate. Each expanded verb carries its Jinja2 template name,
 required capabilities, and caller-supplied parameter values.
 
 Supports ``extends: defined/<name>`` for inheriting from built-in verbs.
+
 Merge rules:
-- ``dependencies``: additive union (apt/source/pip lists concatenate, deduplicated)
-- All other top-level keys: shallow replace (local replaces base entirely)
+    - ``dependencies``: additive union (apt/source/pip lists concatenate,
+      deduplicated)
+    - All other top-level keys: shallow replace (local replaces base entirely)
 
 Usage:
     from defined_compiler.verb_expander import expand_verb
 
-    verb_data = expand_verb("go_to", {"waypoint": "dock"})
+    verb_data = expand_verb("go_to", {"x": 1.0, "y": 2.0})
 """
 
 from __future__ import annotations
@@ -38,13 +40,23 @@ _EXTENDS_PREFIX = "defined/"
 # ---------------------------------------------------------------------------
 
 
+def _canonical_key(item: Any) -> str | Any:
+    """Return a hashable, order-independent key for dedup.
+
+    Dicts are serialized with sorted keys so that ``{"a": 1, "b": 2}``
+    and ``{"b": 2, "a": 1}`` produce the same key.
+    """
+    if isinstance(item, dict):
+        return repr(dict(sorted(item.items())))
+    return item
+
+
 def _deduplicated(items: list) -> list:
-    """Deduplicate a list preserving order."""
+    """Deduplicate a list preserving insertion order."""
     seen: set = set()
     result = []
     for item in items:
-        # For dicts (source deps), use a frozen representation
-        key = repr(item) if isinstance(item, dict) else item
+        key = _canonical_key(item)
         if key not in seen:
             seen.add(key)
             result.append(item)

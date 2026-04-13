@@ -1,0 +1,17 @@
+# Example task: Navigate to waypoint, capture an image, report
+name: SurveyTask
+description: "Navigate to a survey point, capture an image, then report"
+steps:
+  - verb: go_to
+    params:
+      x: 2.0
+      y: 1.0
+      theta: 0.0
+  - verb: capture_image
+    params:
+      topic: "/camera/image_raw"
+      save_path: "/tmp/survey"
+      timeout: 5.0
+  - verb: report
+    params:
+      message: "survey_point_captured"
