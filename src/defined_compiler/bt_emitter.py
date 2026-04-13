@@ -150,10 +150,14 @@ def render_bt_xml(
     verb_names = [v["verb"] for v in expanded_verbs]
     tree_nodes_model = _build_tree_nodes_model(verb_names, verbs_dir)
 
+    # Suffix the tree ID to avoid collisions with registered action node
+    # names (e.g. task "Explore" would collide with Action ID="Explore").
+    tree_id = f"{task_name}Tree"
+
     return f"""\
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4">
-    <BehaviorTree ID="{task_name}">
+    <BehaviorTree ID="{tree_id}">
         <Sequence name="{task_name}_seq">
 {children}
         </Sequence>

@@ -76,7 +76,7 @@ class TestFullPipeline:
 
         bt = root.find("BehaviorTree")
         assert bt is not None
-        assert bt.attrib["ID"] == "PatrolTask"
+        assert bt.attrib["ID"] == "PatrolTaskTree"
 
         seq = bt.find("Sequence")
         assert seq is not None
@@ -352,7 +352,7 @@ class TestErrorPaths:
         task_file.write_text(yaml.dump({"name": "Empty", "steps": []}))
         xml = _compile_task(task_file)
         root = _parse_xml(xml)
-        assert root.find("BehaviorTree").attrib["ID"] == "Empty"
+        assert root.find("BehaviorTree").attrib["ID"] == "EmptyTree"
 
     def test_missing_rdf_file_raises(self, tmp_path):
         """User points to nonexistent RDF file."""

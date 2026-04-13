@@ -137,7 +137,7 @@ class TestBTEmitter:
         xml = bt_emitter.render_bt_xml(expanded, task_name="PatrolTask", verbs_dir=VERB_LIBRARY_DIR)
         assert '<?xml version="1.0"' in xml
         assert 'BTCPP_format="4"' in xml
-        assert 'ID="PatrolTask"' in xml
+        assert 'ID="PatrolTaskTree"' in xml
         assert 'ID="GoTo"' in xml
         assert 'ID="Report"' in xml
         assert 'ID="Wait"' in xml
