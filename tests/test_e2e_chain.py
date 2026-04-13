@@ -26,7 +26,9 @@ def _strip_xacro(urdf: str) -> str:
 
 VERB_LIBRARY_DIR = Path(__file__).resolve().parent.parent / "verb_library"
 RDF_TB3 = Path(__file__).resolve().parent.parent.parent / "rdf" / "examples" / "turtlebot3_burger.rdf.yaml"
+RDF_MVP = Path(__file__).resolve().parent.parent.parent / "rdf" / "examples" / "defined_mvp.rdf.yaml"
 PATROL_TASK = Path(__file__).resolve().parent.parent / "examples" / "patrol_task.yaml"
+SURVEY_TASK = Path(__file__).resolve().parent.parent / "examples" / "survey_task.yaml"
 
 
 @pytest.fixture
@@ -247,3 +249,74 @@ class TestURDFRDFParameterMatch:
                     assert float(range_max.text) == lidar_cap.parameters["range_max"]
                     return
         pytest.fail("lidar range not found in URDF")
+
+
+# ---------------------------------------------------------------------------
+# Test 6: CaptureImage — survey task compiles for robot with camera
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def mvp_robot():
+    return load_rdf(RDF_MVP)
+
+
+@pytest.fixture
+def mvp_registry(mvp_robot):
+    return CapabilityRegistry(mvp_robot)
+
+
+class TestSurveyTaskWithCamera:
+
+    def _compile_survey(self, registry):
+        task = parser.load_task(SURVEY_TASK)
+        expanded = []
+        for step in task["steps"]:
+            verb_data = verb_expander.expand_verb(
+                step["verb"], step.get("params", {}), verbs_dir=VERB_LIBRARY_DIR
+            )
+            result = capability_gate.check(registry, verb_data["required_capabilities"])
+            assert result.passed, f"Capability gate failed: missing {result.missing}"
+            expanded.append(verb_data)
+        return bt_emitter.render_bt_xml(expanded, task_name="SurveyTask", verbs_dir=VERB_LIBRARY_DIR)
+
+    def test_survey_compiles_for_mvp_robot(self, mvp_registry):
+        """MVP robot (has rgb_camera) compiles the survey task."""
+        xml = self._compile_survey(mvp_registry)
+        root = ET.fromstring(xml)
+        assert root.get("BTCPP_format") == "4"
+
+    def test_survey_has_capture_image_action(self, mvp_registry):
+        """Compiled BT XML contains a CaptureImage action node."""
+        xml = self._compile_survey(mvp_registry)
+        root = ET.fromstring(xml)
+        seq = root.find("BehaviorTree/Sequence")
+        actions = [child for child in seq.iter() if child.get("ID") == "CaptureImage"]
+        assert len(actions) == 1
+
+    def test_capture_image_has_correct_attributes(self, mvp_registry):
+        """CaptureImage action has topic, save_path, timeout from task params."""
+        xml = self._compile_survey(mvp_registry)
+        root = ET.fromstring(xml)
+        capture = next(el for el in root.iter() if el.get("ID") == "CaptureImage")
+        assert capture.get("topic") == "/camera/image_raw"
+        assert capture.get("save_path") == "/tmp/survey"
+        assert capture.get("timeout") == "5.0"
+
+    def test_survey_has_tree_nodes_model(self, mvp_registry):
+        """TreeNodesModel includes CaptureImage port declarations."""
+        xml = self._compile_survey(mvp_registry)
+        root = ET.fromstring(xml)
+        model = root.find("TreeNodesModel")
+        assert model is not None
+        action_ids = {a.get("ID") for a in model.findall("Action")}
+        assert "CaptureImage" in action_ids
+
+    def test_capture_image_rejected_without_camera(self, tb3_registry):
+        """TB3 Burger (no rgb_camera) rejects capture_image verb."""
+        verb_data = verb_expander.expand_verb(
+            "capture_image", {"topic": "/camera/image_raw"}, verbs_dir=VERB_LIBRARY_DIR
+        )
+        result = capability_gate.check(tb3_registry, verb_data["required_capabilities"])
+        assert not result.passed
+        assert "rgb_camera" in result.missing

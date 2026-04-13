@@ -16,8 +16,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import yaml
 from jinja2 import Environment, FileSystemLoader
+
+from defined_compiler.verb_expander import resolve_verb_definition
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -32,13 +33,16 @@ DEFAULT_TEMPLATE_DIR = Path(__file__).parent.parent.parent / "verb_library"
 # ---------------------------------------------------------------------------
 
 
-def _build_tree_nodes_model(verb_names: list[str], verbs_dir: Path) -> str:
+def _build_tree_nodes_model(verb_names: list[str], verbs_dir: Path | None) -> str:
     """Generate ``<TreeNodesModel>`` XML from verb definition YAMLs.
+
+    Uses ``resolve_verb_definition`` so that stubs with ``extends``
+    inherit port declarations from their base verb.
 
     Args:
         verb_names: Ordered list of verb identifiers used in the task.
             Duplicates are deduplicated automatically.
-        verbs_dir: Directory containing verb YAML definition files.
+        verbs_dir: Project verb directory (or ``None`` for built-in only).
 
     Returns:
         XML string for the ``<TreeNodesModel>`` block, including
@@ -52,12 +56,10 @@ def _build_tree_nodes_model(verb_names: list[str], verbs_dir: Path) -> str:
             continue
         seen.add(verb_name)
 
-        yaml_path = verbs_dir / f"{verb_name}.yaml"
-        if not yaml_path.exists():
+        try:
+            defn = resolve_verb_definition(verb_name, verbs_dir)
+        except ValueError:
             continue
-
-        with yaml_path.open() as f:
-            defn = yaml.safe_load(f)
 
         # Action ID is PascalCase of the verb name
         action_id = "".join(w.capitalize() for w in verb_name.split("_"))
@@ -115,9 +117,17 @@ def render_bt_xml(
     Returns:
         Complete BehaviorTree.CPP v4 XML as a string.
     """
-    template_dir = verbs_dir if verbs_dir is not None else DEFAULT_TEMPLATE_DIR
+    # Build search path: project dir (if given) + built-in library fallback.
+    # Jinja2 FileSystemLoader checks directories in order, so project
+    # templates shadow built-in ones — matching verb_expander's resolution.
+    search_dirs: list[Path] = []
+    if verbs_dir is not None:
+        search_dirs.append(verbs_dir)
+    if DEFAULT_TEMPLATE_DIR not in search_dirs:
+        search_dirs.append(DEFAULT_TEMPLATE_DIR)
+
     env = Environment(
-        loader=FileSystemLoader(str(template_dir)),
+        loader=FileSystemLoader([str(d) for d in search_dirs]),
         trim_blocks=True,
         lstrip_blocks=True,
     )
@@ -138,7 +148,7 @@ def render_bt_xml(
 
     # Build port manifest from verb definitions
     verb_names = [v["verb"] for v in expanded_verbs]
-    tree_nodes_model = _build_tree_nodes_model(verb_names, template_dir)
+    tree_nodes_model = _build_tree_nodes_model(verb_names, verbs_dir)
 
     return f"""\
 <?xml version="1.0" encoding="UTF-8"?>
