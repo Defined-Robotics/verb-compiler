@@ -20,7 +20,7 @@ from defined_compiler.verb_schema import (
     VerbManifest,
 )
 
-VERB_LIBRARY = Path(__file__).parent.parent / "verb_library"
+VERB_LIBRARY = Path(__file__).parent.parent / "src" / "defined_compiler" / "verb_library"
 
 
 # ---------------------------------------------------------------------------

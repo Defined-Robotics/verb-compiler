@@ -24,7 +24,7 @@ def _strip_xacro(urdf: str) -> str:
     urdf = re.sub(r'<xacro:property[^/]*/>', '', urdf)
     return urdf
 
-VERB_LIBRARY_DIR = Path(__file__).resolve().parent.parent / "verb_library"
+VERB_LIBRARY_DIR = Path(__file__).resolve().parent.parent / "src" / "defined_compiler" / "verb_library"
 RDF_TB3 = Path(__file__).resolve().parent.parent.parent / "rdf" / "examples" / "turtlebot3_burger.rdf.yaml"
 RDF_MVP = Path(__file__).resolve().parent.parent.parent / "rdf" / "examples" / "defined_mvp.rdf.yaml"
 PATROL_TASK = Path(__file__).resolve().parent.parent / "examples" / "patrol_task.yaml"

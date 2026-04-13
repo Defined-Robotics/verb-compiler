@@ -31,7 +31,7 @@ from defined_compiler.verb_expander import (
 # Helpers
 # ---------------------------------------------------------------------------
 
-BUILTIN_VERB_DIR = Path(__file__).resolve().parent.parent / "verb_library"
+BUILTIN_VERB_DIR = Path(__file__).resolve().parent.parent / "src" / "defined_compiler" / "verb_library"
 
 
 def _write_verb(tmp_path: Path, name: str, data: dict) -> Path:

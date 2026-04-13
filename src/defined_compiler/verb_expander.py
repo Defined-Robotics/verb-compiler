@@ -30,7 +30,7 @@ import yaml
 # Constants
 # ---------------------------------------------------------------------------
 
-DEFAULT_VERB_LIBRARY_DIR = Path(__file__).parent.parent.parent / "verb_library"
+DEFAULT_VERB_LIBRARY_DIR = Path(__file__).parent / "verb_library"
 
 _EXTENDS_PREFIX = "defined/"
 

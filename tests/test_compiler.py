@@ -14,7 +14,7 @@ from defined_rdf.registry import CapabilityRegistry
 from defined_compiler import bt_emitter, capability_gate, parser, verb_expander
 
 # Directories shared across tests
-VERB_LIBRARY_DIR = Path(__file__).resolve().parent.parent / "verb_library"
+VERB_LIBRARY_DIR = Path(__file__).resolve().parent.parent / "src" / "defined_compiler" / "verb_library"
 RDF_MVP = Path(__file__).resolve().parent.parent.parent / "rdf" / "examples" / "defined_mvp.rdf.yaml"
 PATROL_TASK = Path(__file__).resolve().parent.parent / "examples" / "patrol_task.yaml"
 

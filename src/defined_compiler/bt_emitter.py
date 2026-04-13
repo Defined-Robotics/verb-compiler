@@ -24,7 +24,7 @@ from defined_compiler.verb_expander import resolve_verb_definition
 # Constants
 # ---------------------------------------------------------------------------
 
-DEFAULT_TEMPLATE_DIR = Path(__file__).parent.parent.parent / "verb_library"
+DEFAULT_TEMPLATE_DIR = Path(__file__).parent / "verb_library"
 
 # ---------------------------------------------------------------------------
 # TreeNodesModel — declares input/output ports so BT.CPP and Groot2 know the
