@@ -20,7 +20,7 @@ from defined_rdf.registry import CapabilityRegistry
 from defined_compiler import bt_emitter, capability_gate, parser, verb_expander
 
 # Shared paths
-VERB_LIBRARY_DIR = Path(__file__).resolve().parent.parent / "verb_library"
+VERB_LIBRARY_DIR = Path(__file__).resolve().parent.parent / "src" / "defined_compiler" / "verb_library"
 RDF_MVP = Path(__file__).resolve().parent.parent.parent / "rdf" / "examples" / "defined_mvp.rdf.yaml"
 PATROL_TASK = Path(__file__).resolve().parent.parent / "examples" / "patrol_task.yaml"
 
@@ -76,7 +76,7 @@ class TestFullPipeline:
 
         bt = root.find("BehaviorTree")
         assert bt is not None
-        assert bt.attrib["ID"] == "PatrolTask"
+        assert bt.attrib["ID"] == "PatrolTaskTree"
 
         seq = bt.find("Sequence")
         assert seq is not None
@@ -352,7 +352,7 @@ class TestErrorPaths:
         task_file.write_text(yaml.dump({"name": "Empty", "steps": []}))
         xml = _compile_task(task_file)
         root = _parse_xml(xml)
-        assert root.find("BehaviorTree").attrib["ID"] == "Empty"
+        assert root.find("BehaviorTree").attrib["ID"] == "EmptyTree"
 
     def test_missing_rdf_file_raises(self, tmp_path):
         """User points to nonexistent RDF file."""

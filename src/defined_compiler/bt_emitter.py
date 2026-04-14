@@ -24,7 +24,7 @@ from defined_compiler.verb_expander import resolve_verb_definition
 # Constants
 # ---------------------------------------------------------------------------
 
-DEFAULT_TEMPLATE_DIR = Path(__file__).parent.parent.parent / "verb_library"
+DEFAULT_TEMPLATE_DIR = Path(__file__).parent / "verb_library"
 
 # ---------------------------------------------------------------------------
 # TreeNodesModel — declares input/output ports so BT.CPP and Groot2 know the
@@ -150,10 +150,14 @@ def render_bt_xml(
     verb_names = [v["verb"] for v in expanded_verbs]
     tree_nodes_model = _build_tree_nodes_model(verb_names, verbs_dir)
 
+    # Suffix the tree ID to avoid collisions with registered action node
+    # names (e.g. task "Explore" would collide with Action ID="Explore").
+    tree_id = f"{task_name}Tree"
+
     return f"""\
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4">
-    <BehaviorTree ID="{task_name}">
+    <BehaviorTree ID="{tree_id}">
         <Sequence name="{task_name}_seq">
 {children}
         </Sequence>
