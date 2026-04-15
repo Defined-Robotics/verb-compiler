@@ -11,11 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout rdf repo (sibling, for test fixtures)
+      - name: Checkout rdf repo (for test fixtures)
         uses: actions/checkout@v4
         with:
           repository: Defined-Robotics/rdf
-          path: ../rdf
+          path: _rdf
+
+      - name: Symlink rdf as sibling (matches workspace layout)
+        run: ln -s "$GITHUB_WORKSPACE/_rdf" "$GITHUB_WORKSPACE/../rdf"
 
       - name: Set up Python
         uses: actions/setup-python@v5
