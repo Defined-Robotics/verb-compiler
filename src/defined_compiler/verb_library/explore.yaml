@@ -4,6 +4,7 @@ name: explore
 description: "Autonomously explore and map the environment using frontier exploration"
 required_capabilities:
   - differential_drive
+  - lidar_2d
 template: explore.xml.j2
 primitives:
   - navigate_to_pose

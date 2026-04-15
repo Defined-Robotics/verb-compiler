@@ -4,6 +4,7 @@ name: go_to
 description: "Navigate the robot to a specified position"
 required_capabilities:
   - differential_drive
+  - lidar_2d
 template: go_to.xml.j2
 primitives:
   - navigate_to_pose
