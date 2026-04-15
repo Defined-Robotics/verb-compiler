@@ -131,7 +131,7 @@ def render_bt_xml(
         loader=FileSystemLoader([str(d) for d in search_dirs]),
         trim_blocks=True,
         lstrip_blocks=True,
-        autoescape=select_autoescape(enabled_extensions=["xml"], default_for_string=False),
+        autoescape=select_autoescape(enabled_extensions=["xml", "xml.j2"], default_for_string=False),
     )
 
     # Render each verb's action XML
