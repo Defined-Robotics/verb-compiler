@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout rdf repo (sibling, for test fixtures)
+        uses: actions/checkout@v4
+        with:
+          repository: Defined-Robotics/rdf
+          path: ../rdf
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
