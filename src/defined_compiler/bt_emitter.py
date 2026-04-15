@@ -16,7 +16,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import FileSystemLoader, select_autoescape
+from jinja2.sandbox import SandboxedEnvironment
 
 from defined_compiler.verb_expander import resolve_verb_definition
 
@@ -126,10 +127,11 @@ def render_bt_xml(
     if DEFAULT_TEMPLATE_DIR not in search_dirs:
         search_dirs.append(DEFAULT_TEMPLATE_DIR)
 
-    env = Environment(
+    env = SandboxedEnvironment(
         loader=FileSystemLoader([str(d) for d in search_dirs]),
         trim_blocks=True,
         lstrip_blocks=True,
+        autoescape=select_autoescape(enabled_extensions=["xml"], default_for_string=False),
     )
 
     # Render each verb's action XML
